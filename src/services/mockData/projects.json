@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "name": "FlowTask Core Platform",
+    "description": "Main task management platform development with advanced features and integrations",
+    "color": "bg-primary",
+    "members": ["1", "2", "3"],
+    "tasks": ["1", "2", "3", "7", "11", "15"],
+    "status": "active",
+    "startDate": "2024-01-01T00:00:00Z",
+    "endDate": "2024-06-30T23:59:59Z",
+    "progress": 65
+  },
+  {
+    "id": "2", 
+    "name": "Mobile App Development",
+    "description": "Native iOS and Android applications with offline sync capabilities",
+    "color": "bg-secondary",
+    "members": ["1", "2", "3"],
+    "tasks": ["4", "5", "9", "10", "13"],
+    "status": "active",
+    "startDate": "2024-02-01T00:00:00Z",
+    "endDate": "2024-08-31T23:59:59Z",
+    "progress": 35
+  },
+  {
+    "id": "3",
+    "name": "User Experience Research",
+    "description": "Comprehensive UX research and design optimization for better user engagement",
+    "color": "bg-accent",
+    "members": ["4", "1"],
+    "tasks": ["6", "8", "12", "14"],
+    "status": "active", 
+    "startDate": "2024-01-15T00:00:00Z",
+    "endDate": "2024-04-15T23:59:59Z",
+    "progress": 80
+  },
+  {
+    "id": "4",
+    "name": "Enterprise Integration",
+    "description": "API development and third-party integrations for enterprise clients",
+    "color": "bg-purple-500",
+    "members": ["2", "3"],
+    "tasks": [],
+    "status": "planning",
+    "startDate": "2024-03-01T00:00:00Z",
+    "endDate": "2024-09-30T23:59:59Z",
+    "progress": 0
+  },
+  {
+    "id": "5",
+    "name": "Security & Compliance",
+    "description": "Security audits, compliance certifications, and data protection measures",
+    "color": "bg-red-500",
+    "members": ["2", "3"],
+    "tasks": [],
+    "status": "planning",
+    "startDate": "2024-04-01T00:00:00Z",
+    "endDate": "2024-07-31T23:59:59Z",
+    "progress": 0
+  }
+]
