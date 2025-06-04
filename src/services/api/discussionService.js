@@ -6,21 +6,20 @@ const apperClient = new ApperClient({
   apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
 });
 
-const tableName = 'project';
+const tableName = 'Discussion';
 
 // All fields for fetch operations
 const allFields = [
-  'Name', 'Tags', 'Owner', 'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy',
-  'description', 'color', 'status', 'start_date', 'end_date', 'progress'
+  'ParentTableId', 'ParentRecordId', 'IsResolved', 'Name', 'Owner', 
+  'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy'
 ];
 
 // Only Updateable fields for create/update operations
 const updateableFields = [
-  'Name', 'Tags', 'Owner', 'description', 'color', 'status', 
-  'start_date', 'end_date', 'progress'
+  'ParentTableId', 'ParentRecordId', 'IsResolved', 'Name', 'Owner'
 ];
 
-export const projectService = {
+export const discussionService = {
   async getAll() {
     try {
       const params = {
@@ -34,8 +33,8 @@ export const projectService = {
       const response = await apperClient.fetchRecords(tableName, params);
       return response?.data || [];
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      throw new Error('Failed to fetch projects');
+      console.error('Error fetching discussions:', error);
+      throw new Error('Failed to fetch discussions');
     }
   },
 
@@ -48,31 +47,20 @@ export const projectService = {
       const response = await apperClient.getRecordById(tableName, id, params);
       return response?.data || null;
     } catch (error) {
-      console.error(`Error fetching project with ID ${id}:`, error);
-      throw new Error('Failed to fetch project');
+      console.error(`Error fetching discussion with ID ${id}:`, error);
+      throw new Error('Failed to fetch discussion');
     }
   },
 
-  async create(projectData) {
+  async create(discussionData) {
     try {
       // Filter to only include updateable fields
       const filteredData = {};
       updateableFields.forEach(field => {
-        if (projectData[field] !== undefined) {
-          filteredData[field] = projectData[field];
+        if (discussionData[field] !== undefined) {
+          filteredData[field] = discussionData[field];
         }
       });
-
-      // Format data according to field types
-      if (filteredData.start_date) {
-        filteredData.start_date = new Date(filteredData.start_date).toISOString().split('T')[0];
-      }
-      if (filteredData.end_date) {
-        filteredData.end_date = new Date(filteredData.end_date).toISOString().split('T')[0];
-      }
-      if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
-        filteredData.Tags = filteredData.Tags.join(',');
-      }
 
       const params = {
         records: [filteredData]
@@ -82,10 +70,10 @@ export const projectService = {
       if (response?.success && response?.results?.[0]?.success) {
         return response.results[0].data;
       }
-      throw new Error('Failed to create project');
+      throw new Error('Failed to create discussion');
     } catch (error) {
-      console.error('Error creating project:', error);
-      throw new Error('Failed to create project');
+      console.error('Error creating discussion:', error);
+      throw new Error('Failed to create discussion');
     }
   },
 
@@ -99,17 +87,6 @@ export const projectService = {
         }
       });
 
-      // Format data according to field types
-      if (filteredData.start_date) {
-        filteredData.start_date = new Date(filteredData.start_date).toISOString().split('T')[0];
-      }
-      if (filteredData.end_date) {
-        filteredData.end_date = new Date(filteredData.end_date).toISOString().split('T')[0];
-      }
-      if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
-        filteredData.Tags = filteredData.Tags.join(',');
-      }
-
       const params = {
         records: [filteredData]
       };
@@ -118,10 +95,10 @@ export const projectService = {
       if (response?.success && response?.results?.[0]?.success) {
         return response.results[0].data;
       }
-      throw new Error('Failed to update project');
+      throw new Error('Failed to update discussion');
     } catch (error) {
-      console.error('Error updating project:', error);
-      throw new Error('Failed to update project');
+      console.error('Error updating discussion:', error);
+      throw new Error('Failed to update discussion');
     }
   },
 
@@ -135,10 +112,10 @@ export const projectService = {
       if (response?.success) {
         return true;
       }
-      throw new Error('Failed to delete project');
+      throw new Error('Failed to delete discussion');
     } catch (error) {
-      console.error('Error deleting project:', error);
-      throw new Error('Failed to delete project');
+      console.error('Error deleting discussion:', error);
+      throw new Error('Failed to delete discussion');
     }
   }
 };

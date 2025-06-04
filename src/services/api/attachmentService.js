@@ -6,21 +6,21 @@ const apperClient = new ApperClient({
   apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
 });
 
-const tableName = 'project';
+const tableName = 'Attachment';
 
 // All fields for fetch operations
 const allFields = [
-  'Name', 'Tags', 'Owner', 'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy',
-  'description', 'color', 'status', 'start_date', 'end_date', 'progress'
+  'Path', 'Size', 'Type', 'IsExternal', 'Ordinal', 'ParentTableId', 'ParentRecordId',
+  'FieldId', 'Name', 'Owner', 'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy'
 ];
 
 // Only Updateable fields for create/update operations
 const updateableFields = [
-  'Name', 'Tags', 'Owner', 'description', 'color', 'status', 
-  'start_date', 'end_date', 'progress'
+  'Path', 'Size', 'Type', 'IsExternal', 'Ordinal', 'ParentTableId', 'ParentRecordId',
+  'FieldId', 'Name', 'Owner'
 ];
 
-export const projectService = {
+export const attachmentService = {
   async getAll() {
     try {
       const params = {
@@ -34,8 +34,8 @@ export const projectService = {
       const response = await apperClient.fetchRecords(tableName, params);
       return response?.data || [];
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      throw new Error('Failed to fetch projects');
+      console.error('Error fetching attachments:', error);
+      throw new Error('Failed to fetch attachments');
     }
   },
 
@@ -48,31 +48,20 @@ export const projectService = {
       const response = await apperClient.getRecordById(tableName, id, params);
       return response?.data || null;
     } catch (error) {
-      console.error(`Error fetching project with ID ${id}:`, error);
-      throw new Error('Failed to fetch project');
+      console.error(`Error fetching attachment with ID ${id}:`, error);
+      throw new Error('Failed to fetch attachment');
     }
   },
 
-  async create(projectData) {
+  async create(attachmentData) {
     try {
       // Filter to only include updateable fields
       const filteredData = {};
       updateableFields.forEach(field => {
-        if (projectData[field] !== undefined) {
-          filteredData[field] = projectData[field];
+        if (attachmentData[field] !== undefined) {
+          filteredData[field] = attachmentData[field];
         }
       });
-
-      // Format data according to field types
-      if (filteredData.start_date) {
-        filteredData.start_date = new Date(filteredData.start_date).toISOString().split('T')[0];
-      }
-      if (filteredData.end_date) {
-        filteredData.end_date = new Date(filteredData.end_date).toISOString().split('T')[0];
-      }
-      if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
-        filteredData.Tags = filteredData.Tags.join(',');
-      }
 
       const params = {
         records: [filteredData]
@@ -82,10 +71,10 @@ export const projectService = {
       if (response?.success && response?.results?.[0]?.success) {
         return response.results[0].data;
       }
-      throw new Error('Failed to create project');
+      throw new Error('Failed to create attachment');
     } catch (error) {
-      console.error('Error creating project:', error);
-      throw new Error('Failed to create project');
+      console.error('Error creating attachment:', error);
+      throw new Error('Failed to create attachment');
     }
   },
 
@@ -99,17 +88,6 @@ export const projectService = {
         }
       });
 
-      // Format data according to field types
-      if (filteredData.start_date) {
-        filteredData.start_date = new Date(filteredData.start_date).toISOString().split('T')[0];
-      }
-      if (filteredData.end_date) {
-        filteredData.end_date = new Date(filteredData.end_date).toISOString().split('T')[0];
-      }
-      if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
-        filteredData.Tags = filteredData.Tags.join(',');
-      }
-
       const params = {
         records: [filteredData]
       };
@@ -118,10 +96,10 @@ export const projectService = {
       if (response?.success && response?.results?.[0]?.success) {
         return response.results[0].data;
       }
-      throw new Error('Failed to update project');
+      throw new Error('Failed to update attachment');
     } catch (error) {
-      console.error('Error updating project:', error);
-      throw new Error('Failed to update project');
+      console.error('Error updating attachment:', error);
+      throw new Error('Failed to update attachment');
     }
   },
 
@@ -135,10 +113,10 @@ export const projectService = {
       if (response?.success) {
         return true;
       }
-      throw new Error('Failed to delete project');
+      throw new Error('Failed to delete attachment');
     } catch (error) {
-      console.error('Error deleting project:', error);
-      throw new Error('Failed to delete project');
+      console.error('Error deleting attachment:', error);
+      throw new Error('Failed to delete attachment');
     }
   }
 };

@@ -1,14 +1,40 @@
-import * as Icons from 'lucide-react';
+import { 
+  CheckSquare, Search, Sun, Moon, Plus, Menu, X, MoreHorizontal, Check, 
+  Package, Calendar, AlertTriangle, Users, Circle, Clock, CheckCircle,
+  Columns, List, Trash2
+} from 'lucide-react';
 
-const ApperIcon = ({ name, ...props }) => {
-    let IconComponent = Icons[name];
+const iconMap = {
+  CheckSquare,
+  Search,
+  Sun,
+  Moon,
+  Plus,
+  Menu,
+  X,
+  MoreHorizontal,
+  Check,
+  Package,
+  Calendar,
+  AlertTriangle,
+  Users,
+  Circle,
+  Clock,
+  CheckCircle,
+  Columns,
+  List,
+  Trash2
+};
 
-    if (!IconComponent) {
-        console.warn(`Icon "${name}" does not exist in lucide-react`);
-        IconComponent = Icons['Smile'];
-    }
-
-    return <IconComponent {...props} />;
+const ApperIcon = ({ name, className = "", ...props }) => {
+  const IconComponent = iconMap[name];
+  
+  if (!IconComponent) {
+    console.warn(`Icon "${name}" not found in iconMap`);
+    return null;
+  }
+  
+  return <IconComponent className={className} {...props} />;
 };
 
 export default ApperIcon;

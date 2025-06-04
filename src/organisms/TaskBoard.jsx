@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
 import { format, isToday, isTomorrow, isYesterday, isPast } from 'date-fns'
-import ApperIcon from './ApperIcon'
+import { ApperIcon } from '../components'
 
 const priorityConfig = {
   low: { color: 'bg-surface-400', text: 'text-surface-400', label: 'Low' },

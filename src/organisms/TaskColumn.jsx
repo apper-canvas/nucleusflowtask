@@ -2,7 +2,7 @@ import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import TaskCard from './TaskCard';
 import NoTasksIcon from '../atoms/NoTasksIcon';
-import ApperIcon from '../ApperIcon';
+import { ApperIcon } from '../components';
 
 const statusConfig = {
   todo: { label: 'To Do', color: 'bg-surface-100 dark:bg-surface-800' },

@@ -1,53 +1,148 @@
-import tasksData from '../mockData/tasks.json'
+const { ApperClient } = window.ApperSDK;
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+// Initialize ApperClient
+const apperClient = new ApperClient({
+  apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+  apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+});
 
-let tasks = [...tasksData]
+const tableName = 'task';
+
+// All fields for fetch operations (including System fields for display)
+const allFields = [
+  'Name', 'Tags', 'Owner', 'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy',
+  'title', 'description', 'status', 'priority', 'due_date', 'created_at', 'updated_at',
+  'assignee', 'project_id'
+];
+
+// Only Updateable fields for create/update operations
+const updateableFields = [
+  'Name', 'Tags', 'Owner', 'title', 'description', 'status', 'priority', 
+  'due_date', 'created_at', 'updated_at', 'assignee', 'project_id'
+];
 
 export const taskService = {
   async getAll() {
-    await delay(300)
-    return [...tasks]
+    try {
+      const params = {
+        fields: allFields,
+        pagingInfo: {
+          limit: 100,
+          offset: 0
+        }
+      };
+      
+      const response = await apperClient.fetchRecords(tableName, params);
+      return response?.data || [];
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+      throw new Error('Failed to fetch tasks');
+    }
   },
 
   async getById(id) {
-    await delay(200)
-    const task = tasks.find(t => t.id === id)
-    return task ? { ...task } : null
+    try {
+      const params = {
+        fields: allFields
+      };
+      
+      const response = await apperClient.getRecordById(tableName, id, params);
+      return response?.data || null;
+    } catch (error) {
+      console.error(`Error fetching task with ID ${id}:`, error);
+      throw new Error('Failed to fetch task');
+    }
   },
 
   async create(taskData) {
-    await delay(400)
-    const newTask = {
-      ...taskData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    try {
+      // Filter to only include updateable fields
+      const filteredData = {};
+      updateableFields.forEach(field => {
+        if (taskData[field] !== undefined) {
+          filteredData[field] = taskData[field];
+        }
+      });
+
+      // Format data according to field types
+      if (filteredData.due_date) {
+        filteredData.due_date = new Date(filteredData.due_date).toISOString().split('T')[0];
+      }
+      if (filteredData.created_at) {
+        filteredData.created_at = new Date(filteredData.created_at).toISOString();
+      }
+      if (filteredData.updated_at) {
+        filteredData.updated_at = new Date(filteredData.updated_at).toISOString();
+      }
+      if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
+        filteredData.Tags = filteredData.Tags.join(',');
+      }
+
+      const params = {
+        records: [filteredData]
+      };
+
+      const response = await apperClient.createRecord(tableName, params);
+      if (response?.success && response?.results?.[0]?.success) {
+        return response.results[0].data;
+      }
+      throw new Error('Failed to create task');
+    } catch (error) {
+      console.error('Error creating task:', error);
+      throw new Error('Failed to create task');
     }
-    tasks = [...tasks, newTask]
-    return { ...newTask }
   },
 
   async update(id, updateData) {
-    await delay(300)
-    const index = tasks.findIndex(t => t.id === id)
-    if (index === -1) throw new Error('Task not found')
-    
-    const updatedTask = {
-      ...tasks[index],
-      ...updateData,
-      updatedAt: new Date().toISOString()
+    try {
+      // Filter to only include updateable fields
+      const filteredData = { Id: id };
+      updateableFields.forEach(field => {
+        if (updateData[field] !== undefined) {
+          filteredData[field] = updateData[field];
+        }
+      });
+
+      // Format data according to field types
+      if (filteredData.due_date) {
+        filteredData.due_date = new Date(filteredData.due_date).toISOString().split('T')[0];
+      }
+      if (filteredData.updated_at) {
+        filteredData.updated_at = new Date().toISOString();
+      }
+      if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
+        filteredData.Tags = filteredData.Tags.join(',');
+      }
+
+      const params = {
+        records: [filteredData]
+      };
+
+      const response = await apperClient.updateRecord(tableName, params);
+      if (response?.success && response?.results?.[0]?.success) {
+        return response.results[0].data;
+      }
+      throw new Error('Failed to update task');
+    } catch (error) {
+      console.error('Error updating task:', error);
+      throw new Error('Failed to update task');
     }
-    tasks = tasks.map(t => t.id === id ? updatedTask : t)
-    return { ...updatedTask }
   },
 
   async delete(id) {
-    await delay(250)
-    const index = tasks.findIndex(t => t.id === id)
-    if (index === -1) throw new Error('Task not found')
-    
-    tasks = tasks.filter(t => t.id !== id)
-    return true
+    try {
+      const params = {
+        RecordIds: [id]
+      };
+
+      const response = await apperClient.deleteRecord(tableName, params);
+      if (response?.success) {
+        return true;
+      }
+      throw new Error('Failed to delete task');
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      throw new Error('Failed to delete task');
+    }
   }
-}
+};

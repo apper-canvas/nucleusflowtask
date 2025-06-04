@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-hot-toast'
 import ApperIcon from '../components/ApperIcon'
 import MainFeature from '../components/MainFeature'
 import { taskService } from '../services'
-
 const Header = ({ searchQuery, setSearchQuery, onQuickAdd, darkMode, setDarkMode }) => {
   return (
     <motion.header 
@@ -187,31 +187,46 @@ export default function Home() {
     return matchesSearch && matchesProject
   })
 
-  const handleTaskUpdate = async (updatedTask) => {
+const handleTaskUpdate = async (updatedTask) => {
     try {
+      setLoading(true)
       const result = await taskService.update(updatedTask.id, updatedTask)
       setTasks(prev => prev.map(task => task.id === updatedTask.id ? result : task))
+      toast.success('Task updated successfully')
     } catch (err) {
       setError(err.message)
+      toast.error('Failed to update task: ' + err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleTaskCreate = async (newTask) => {
     try {
+      setLoading(true)
       const result = await taskService.create(newTask)
       setTasks(prev => [...prev, result])
       setShowQuickAdd(false)
+      toast.success('Task created successfully')
     } catch (err) {
       setError(err.message)
+      toast.error('Failed to create task: ' + err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleTaskDelete = async (taskId) => {
     try {
+      setLoading(true)
       await taskService.delete(taskId)
       setTasks(prev => prev.filter(task => task.id !== taskId))
+      toast.success('Task deleted successfully')
     } catch (err) {
       setError(err.message)
+      toast.error('Failed to delete task: ' + err.message)
+    } finally {
+      setLoading(false)
     }
   }
 

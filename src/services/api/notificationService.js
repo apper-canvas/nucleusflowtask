@@ -6,21 +6,21 @@ const apperClient = new ApperClient({
   apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
 });
 
-const tableName = 'project';
+const tableName = 'Notification';
 
 // All fields for fetch operations
 const allFields = [
-  'Name', 'Tags', 'Owner', 'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy',
-  'description', 'color', 'status', 'start_date', 'end_date', 'progress'
+  'Activity', 'Discussion', 'Comment', 'IsRead', 'IsEmailed', 'Type', 'Name', 
+  'Tags', 'Owner', 'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy', 'Subscriber'
 ];
 
 // Only Updateable fields for create/update operations
 const updateableFields = [
-  'Name', 'Tags', 'Owner', 'description', 'color', 'status', 
-  'start_date', 'end_date', 'progress'
+  'Activity', 'Discussion', 'Comment', 'IsRead', 'IsEmailed', 'Type', 'Name', 
+  'Tags', 'Owner', 'Subscriber'
 ];
 
-export const projectService = {
+export const notificationService = {
   async getAll() {
     try {
       const params = {
@@ -34,8 +34,8 @@ export const projectService = {
       const response = await apperClient.fetchRecords(tableName, params);
       return response?.data || [];
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      throw new Error('Failed to fetch projects');
+      console.error('Error fetching notifications:', error);
+      throw new Error('Failed to fetch notifications');
     }
   },
 
@@ -48,28 +48,22 @@ export const projectService = {
       const response = await apperClient.getRecordById(tableName, id, params);
       return response?.data || null;
     } catch (error) {
-      console.error(`Error fetching project with ID ${id}:`, error);
-      throw new Error('Failed to fetch project');
+      console.error(`Error fetching notification with ID ${id}:`, error);
+      throw new Error('Failed to fetch notification');
     }
   },
 
-  async create(projectData) {
+  async create(notificationData) {
     try {
       // Filter to only include updateable fields
       const filteredData = {};
       updateableFields.forEach(field => {
-        if (projectData[field] !== undefined) {
-          filteredData[field] = projectData[field];
+        if (notificationData[field] !== undefined) {
+          filteredData[field] = notificationData[field];
         }
       });
 
-      // Format data according to field types
-      if (filteredData.start_date) {
-        filteredData.start_date = new Date(filteredData.start_date).toISOString().split('T')[0];
-      }
-      if (filteredData.end_date) {
-        filteredData.end_date = new Date(filteredData.end_date).toISOString().split('T')[0];
-      }
+      // Format Tags field (Tag type - comma-separated)
       if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
         filteredData.Tags = filteredData.Tags.join(',');
       }
@@ -82,10 +76,10 @@ export const projectService = {
       if (response?.success && response?.results?.[0]?.success) {
         return response.results[0].data;
       }
-      throw new Error('Failed to create project');
+      throw new Error('Failed to create notification');
     } catch (error) {
-      console.error('Error creating project:', error);
-      throw new Error('Failed to create project');
+      console.error('Error creating notification:', error);
+      throw new Error('Failed to create notification');
     }
   },
 
@@ -99,13 +93,7 @@ export const projectService = {
         }
       });
 
-      // Format data according to field types
-      if (filteredData.start_date) {
-        filteredData.start_date = new Date(filteredData.start_date).toISOString().split('T')[0];
-      }
-      if (filteredData.end_date) {
-        filteredData.end_date = new Date(filteredData.end_date).toISOString().split('T')[0];
-      }
+      // Format Tags field (Tag type - comma-separated)
       if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
         filteredData.Tags = filteredData.Tags.join(',');
       }
@@ -118,10 +106,10 @@ export const projectService = {
       if (response?.success && response?.results?.[0]?.success) {
         return response.results[0].data;
       }
-      throw new Error('Failed to update project');
+      throw new Error('Failed to update notification');
     } catch (error) {
-      console.error('Error updating project:', error);
-      throw new Error('Failed to update project');
+      console.error('Error updating notification:', error);
+      throw new Error('Failed to update notification');
     }
   },
 
@@ -135,10 +123,10 @@ export const projectService = {
       if (response?.success) {
         return true;
       }
-      throw new Error('Failed to delete project');
+      throw new Error('Failed to delete notification');
     } catch (error) {
-      console.error('Error deleting project:', error);
-      throw new Error('Failed to delete project');
+      console.error('Error deleting notification:', error);
+      throw new Error('Failed to delete notification');
     }
   }
 };

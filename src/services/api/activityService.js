@@ -6,21 +6,20 @@ const apperClient = new ApperClient({
   apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
 });
 
-const tableName = 'project';
+const tableName = 'Activity';
 
 // All fields for fetch operations
 const allFields = [
-  'Name', 'Tags', 'Owner', 'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy',
-  'description', 'color', 'status', 'start_date', 'end_date', 'progress'
+  'ParentTableId', 'ParentRecordId', 'Type', 'Name', 'Tags', 'Owner',
+  'CreatedOn', 'CreatedBy', 'ModifiedOn', 'ModifiedBy', 'Discussion'
 ];
 
 // Only Updateable fields for create/update operations
 const updateableFields = [
-  'Name', 'Tags', 'Owner', 'description', 'color', 'status', 
-  'start_date', 'end_date', 'progress'
+  'ParentTableId', 'ParentRecordId', 'Type', 'Name', 'Tags', 'Owner', 'Discussion'
 ];
 
-export const projectService = {
+export const activityService = {
   async getAll() {
     try {
       const params = {
@@ -34,8 +33,8 @@ export const projectService = {
       const response = await apperClient.fetchRecords(tableName, params);
       return response?.data || [];
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      throw new Error('Failed to fetch projects');
+      console.error('Error fetching activities:', error);
+      throw new Error('Failed to fetch activities');
     }
   },
 
@@ -48,28 +47,22 @@ export const projectService = {
       const response = await apperClient.getRecordById(tableName, id, params);
       return response?.data || null;
     } catch (error) {
-      console.error(`Error fetching project with ID ${id}:`, error);
-      throw new Error('Failed to fetch project');
+      console.error(`Error fetching activity with ID ${id}:`, error);
+      throw new Error('Failed to fetch activity');
     }
   },
 
-  async create(projectData) {
+  async create(activityData) {
     try {
       // Filter to only include updateable fields
       const filteredData = {};
       updateableFields.forEach(field => {
-        if (projectData[field] !== undefined) {
-          filteredData[field] = projectData[field];
+        if (activityData[field] !== undefined) {
+          filteredData[field] = activityData[field];
         }
       });
 
-      // Format data according to field types
-      if (filteredData.start_date) {
-        filteredData.start_date = new Date(filteredData.start_date).toISOString().split('T')[0];
-      }
-      if (filteredData.end_date) {
-        filteredData.end_date = new Date(filteredData.end_date).toISOString().split('T')[0];
-      }
+      // Format Tags field (Tag type - comma-separated)
       if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
         filteredData.Tags = filteredData.Tags.join(',');
       }
@@ -82,10 +75,10 @@ export const projectService = {
       if (response?.success && response?.results?.[0]?.success) {
         return response.results[0].data;
       }
-      throw new Error('Failed to create project');
+      throw new Error('Failed to create activity');
     } catch (error) {
-      console.error('Error creating project:', error);
-      throw new Error('Failed to create project');
+      console.error('Error creating activity:', error);
+      throw new Error('Failed to create activity');
     }
   },
 
@@ -99,13 +92,7 @@ export const projectService = {
         }
       });
 
-      // Format data according to field types
-      if (filteredData.start_date) {
-        filteredData.start_date = new Date(filteredData.start_date).toISOString().split('T')[0];
-      }
-      if (filteredData.end_date) {
-        filteredData.end_date = new Date(filteredData.end_date).toISOString().split('T')[0];
-      }
+      // Format Tags field (Tag type - comma-separated)
       if (filteredData.Tags && Array.isArray(filteredData.Tags)) {
         filteredData.Tags = filteredData.Tags.join(',');
       }
@@ -118,10 +105,10 @@ export const projectService = {
       if (response?.success && response?.results?.[0]?.success) {
         return response.results[0].data;
       }
-      throw new Error('Failed to update project');
+      throw new Error('Failed to update activity');
     } catch (error) {
-      console.error('Error updating project:', error);
-      throw new Error('Failed to update project');
+      console.error('Error updating activity:', error);
+      throw new Error('Failed to update activity');
     }
   },
 
@@ -135,10 +122,10 @@ export const projectService = {
       if (response?.success) {
         return true;
       }
-      throw new Error('Failed to delete project');
+      throw new Error('Failed to delete activity');
     } catch (error) {
-      console.error('Error deleting project:', error);
-      throw new Error('Failed to delete project');
+      console.error('Error deleting activity:', error);
+      throw new Error('Failed to delete activity');
     }
   }
 };
